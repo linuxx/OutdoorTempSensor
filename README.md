@@ -20,6 +20,7 @@ Reads a DHT22 and publishes it to MQTT
 - After the reboot access the device with the hostname TempSen-###### or refer to your router for DHCP IP
 - Click Setup to access the MQTT settings
 
+# Screenshots!
 
 ![Main Page](https://github.com/linuxx/OutdoorTempSensor/blob/master/images/main.jpg)
 ![WiFi Scan](https://github.com/linuxx/OutdoorTempSensor/blob/master/images/wifiscan.jpg)
