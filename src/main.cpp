@@ -54,6 +54,26 @@ unsigned long everyMinute; //hearbeat every minute
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
+//Gets the hostname
+const char* setupHostname()
+{
+  String strName = "TempSens";
+  String strMac = WiFi.macAddress();
+  
+  //get rid of colons and grab the end
+  strMac.replace(":","");
+  
+  // combine strName and the substring of strMac
+  String combinedString = strName + "-" + strMac.substring(8);
+  
+  // create a char array and copy the content of combinedString to it
+  char* hostname = new char[combinedString.length() + 1];
+  strcpy(hostname, combinedString.c_str());
+  
+  // return the char array
+  return hostname;
+}
+
 //sets all the values in the config screen so we can see them
 void pushSettingsToParameters()
 {
@@ -175,7 +195,7 @@ void MQTTConnect() {
     Serial.println(strServer);
 
     // Attempt to connect
-    if (objClient.connect(strServer,strUser, strPass)) {
+    if (objClient.connect(setupHostname(),strUser, strPass)) {
       Serial.println("Connected!!");
 
       //wake publish
@@ -203,9 +223,7 @@ void setup() {
   }
 
   //create a unique SSID
-  String strMac = WiFi.macAddress();
-  String strSSIDName = "TempSen-" + strMac.substring(8);
-  strSSIDName.replace(":", "");
+  const char* strSSIDName = setupHostname();
 
   //add the parameters 
   wifiManager.addParameter(&mqtt_server);
@@ -224,7 +242,7 @@ void setup() {
   wifiManager.setDisableConfigPortal(false);
 
   //set hostname
-  wifiManager.setHostname(strSSIDName.c_str());
+  wifiManager.setHostname(strSSIDName);
 
   //setup the menu (removing some items)
   std::vector<const char *> menu = {"wifi","param","sep","info","sep","restart","exit"};
@@ -240,7 +258,7 @@ void setup() {
   objClient.setServer(strServer, intPort); //set server and port
 
   //setup the SSID if we are in discovery mode
-  if(wifiManager.autoConnect(strSSIDName.c_str()))
+  if(wifiManager.autoConnect(strSSIDName))
   {
     wifiManager.startWebPortal();
     portalRunning = true;
